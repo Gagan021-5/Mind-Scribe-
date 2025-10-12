@@ -34,7 +34,6 @@ const UploadForm = () => {
       if (res.data.success === false) {
         setError(res.data.msg);
       } else {
-        // Gemini sometimes returns a JSON string, so parse it safely
         const analysis = JSON.parse(res.data.emotionAnalysis || "{}");
         setResponse(analysis);
       }
@@ -47,9 +46,9 @@ const UploadForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-8 text-white">
+    <div className="flex flex-col items-center gap-8 text-white w-full px-4 sm:px-6 lg:px-0">
       <form
-        className="flex flex-col gap-4 bg-slate-700 p-6 rounded-2xl shadow-md w-full max-w-md"
+        className="flex flex-col gap-4 bg-slate-700 p-6 rounded-2xl shadow-md w-full max-w-md sm:max-w-lg lg:max-w-xl"
         onSubmit={handleSubmit}
       >
         <label className="text-sm font-medium">Upload Journal Image</label>
@@ -59,7 +58,7 @@ const UploadForm = () => {
           name="wordimage"
           type="file"
           accept="image/*"
-          className="border cursor-pointer text-zinc-400 border-gray-300 p-2 rounded-md"
+          className="border cursor-pointer text-zinc-400 border-gray-300 p-2 rounded-md w-full"
         />
 
         <button
@@ -74,7 +73,9 @@ const UploadForm = () => {
       </form>
 
       {error && (
-        <p className="text-red-400 mt-4 text-sm font-semibold">{error}</p>
+        <p className="text-red-400 mt-4 text-sm font-semibold text-center sm:text-left">
+          {error}
+        </p>
       )}
 
       {response && <Result data={response} />}

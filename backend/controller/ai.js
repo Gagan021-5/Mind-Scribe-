@@ -1,36 +1,45 @@
-import multer from "multer";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
+import { GoogleGenAI, createUserContent } from "@google/genai";
 
-// fix __dirname for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API });
 
-// absolute uploads folder path
-const uploadDir = path.join(__dirname, "../uploads");
+export const analyzeHandwriting = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ success: false, msg: "No file uploaded" });
 
-// create folder if it doesn't exist
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+    const filePath = req.file.path;
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir); // absolute path
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname));
-  },
-});
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: createUserContent([
+        {
+          fileData: {
+            mimeType: req.file.mimetype,
+            fileUri: filePath,
+          },
+        },
+        `Analyze the emotions reflected in this handwritten note. 
+         Respond strictly in JSON format like:
+         {"emotion": "<dominant emotion>", "confidence": <0-1>, "summary": "<short reason>"}`,
+      ]),
+    });
 
-export const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    console.log("Uploading file:", file.originalname, file.mimetype);
-    if (file.mimetype.startsWith("image/")) cb(null, true);
-    else cb(new Error("Only image files allowed"), false);
-  },
-});
+    const analysisText = await response.text();
+
+    let parsedAnalysis;
+    try {
+      parsedAnalysis = JSON.parse(analysisText);
+    } catch {
+      parsedAnalysis = { emotion: "unknown", confidence: 0, summary: "Could not parse AI output" };
+    }
+
+    res.status(200).json({
+      success: true,
+      emotionAnalysis: parsedAnalysis,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, msg: "AI analysis failed" });
+  } finally {
+    if (req.file?.path) fs.unlink(req.file.path, () => {});
+  }
+};
