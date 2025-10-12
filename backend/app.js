@@ -20,11 +20,8 @@ app.get("/",(req,res)=>{
 
 
 
-//router
+
 import journalroute from "./router/uploadroute.js";
-
-
-
 app.use("/upload",journalroute);
 
 app.listen(port,()=>{

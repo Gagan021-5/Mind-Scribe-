@@ -15,5 +15,4 @@ journalroute.post(
   handleImage
 );
 
-
 export default journalroute;

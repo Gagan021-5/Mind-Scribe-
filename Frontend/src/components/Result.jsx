@@ -1,14 +1,13 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { Sparkles, Heart, CloudLightning } from "lucide-react";
 
-const Result = () => {
+const Result = ({ data }) => {
+  const { emotion, confidence, summary } = data || {};
+
   return (
     <div className="relative flex flex-col items-center justify-center text-center py-16 px-6 w-full">
-      {/* Glowing gradient background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0f172a] via-[#1e1b4b] to-[#111827] blur-3xl opacity-60"></div>
 
-      {/* Floating sparkles */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.5 }}
@@ -27,7 +26,6 @@ const Result = () => {
         <Heart size={36} />
       </motion.div>
 
-      {/* Main card */}
       <motion.div
         initial={{ opacity: 0, y: 50, scale: 0.9 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -46,27 +44,34 @@ const Result = () => {
             transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
             className="font-bold text-red-400 drop-shadow-[0_0_10px_rgba(255,0,0,0.5)]"
           >
-            anxious
+            {emotion || "unknown"}
           </motion.span>{" "}
           today.
         </p>
 
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 1 }}
-          className="italic text-gray-400 text-lg"
-        >
-          “Even the darkest night will end and the sun will rise.”
-        </motion.p>
+        {summary && (
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 1 }}
+            className="italic text-gray-400 text-lg"
+          >
+            “{summary}”
+          </motion.p>
+        )}
 
-        {/* Animated divider */}
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: "100%" }}
           transition={{ duration: 1.2, delay: 0.8 }}
           className="mt-8 h-[2px] bg-gradient-to-r from-indigo-400 via-pink-400 to-yellow-400"
         ></motion.div>
+
+        {confidence && (
+          <p className="text-sm text-gray-400 mt-4">
+            Confidence: {(confidence * 100).toFixed(1)}%
+          </p>
+        )}
 
         <p className="text-sm text-gray-500 mt-4">
           🌙 Remember — feelings are temporary, but your strength is permanent.

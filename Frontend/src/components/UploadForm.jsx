@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import Result from "./Result";
 
 const UploadForm = () => {
   const [uploading, setUploading] = useState(false);
@@ -22,24 +23,23 @@ const UploadForm = () => {
 
     setUploading(true);
     setError(null);
-    setResponse(null);
 
     try {
       const res = await axios.post(
         "http://localhost:3000/upload/image",
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       if (res.data.success === false) {
         setError(res.data.msg);
       } else {
-        setResponse(res.data);
+        // Gemini sometimes returns a JSON string, so parse it safely
+        const analysis = JSON.parse(res.data.emotionAnalysis || "{}");
+        setResponse(analysis);
       }
     } catch (err) {
-      console.error("Error:", err);
+      console.error(err);
       setError("Upload failed. Please try again.");
     } finally {
       setUploading(false);
@@ -47,8 +47,11 @@ const UploadForm = () => {
   };
 
   return (
-    <div className="w-full max-w-md bg-slate-700 p-6 rounded-2xl shadow-md border border-gray-200 text-white">
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+    <div className="flex flex-col items-center gap-8 text-white">
+      <form
+        className="flex flex-col gap-4 bg-slate-700 p-6 rounded-2xl shadow-md w-full max-w-md"
+        onSubmit={handleSubmit}
+      >
         <label className="text-sm font-medium">Upload Journal Image</label>
 
         <input
@@ -63,7 +66,7 @@ const UploadForm = () => {
           disabled={!file || uploading}
           type="submit"
           className={`bg-gray-600 hover:bg-slate-800 text-white py-2 rounded-md transition ${
-            uploading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+            uploading ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
           {uploading ? "Analyzing..." : "Analyze"}
@@ -74,13 +77,7 @@ const UploadForm = () => {
         <p className="text-red-400 mt-4 text-sm font-semibold">{error}</p>
       )}
 
-      {response && (
-        <div className="mt-4 bg-slate-800 p-4 rounded-md text-sm">
-          <pre className="whitespace-pre-wrap break-words">
-            {JSON.stringify(response, null, 2)}
-          </pre>
-        </div>
-      )}
+      {response && <Result data={response} />}
     </div>
   );
 };
