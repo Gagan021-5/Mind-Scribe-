@@ -1,7 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
 import Result from "./Result";
-
 const UploadForm = () => {
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState(null);
@@ -26,9 +25,11 @@ const UploadForm = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/upload/image",
+        "http://localhost:8000/upload/image",
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
 
       if (res.data.success === false) {
