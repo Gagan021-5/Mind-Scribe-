@@ -53,6 +53,7 @@ web_modules/
 *.tsbuildinfo
 backend/config/cultivated-era-453313-n5-9cc7e693f2fe.json
 
+backend/config/*.json
 
 # Optional npm cache directory
 .npm
