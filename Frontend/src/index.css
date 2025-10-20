@@ -1,76 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
 
-/* Root color variables */
-:root {
-  --bg-gradient-1: #0f172a;
-  --bg-gradient-2: #1e1b4b;
-  --bg-gradient-3: #312e81;
-  --orb-color-1: #6366f1; /* Purple orb */
-  --orb-color-2: #ec4899; /* Pink orb */
-}
 
-/* Body styles */
+
 body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: "Inter", sans-serif;
-  background: radial-gradient(circle at 20% 30%, var(--bg-gradient-3) 0%, var(--bg-gradient-1) 100%);
-  min-height: 100vh;
-  overflow-x: hidden;
-  color: white;
-  position: relative;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
 }
 
-/* Floating gradient orbs */
-body::before,
-body::after {
-  content: "";
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  filter: blur(180px);
-  opacity: 0.6;
-  z-index: -1;
-  animation: float 12s ease-in-out infinite alternate;
-}
-
-body::before {
-  top: -150px;
-  left: -200px;
-  background: radial-gradient(circle, var(--orb-color-1) 0%, transparent 70%);
-}
-
-body::after {
-  bottom: -150px;
-  right: -200px;
-  background: radial-gradient(circle, var(--orb-color-2) 0%, transparent 70%);
-  animation-delay: 6s;
-}
-
-/* Floating animation */
 @keyframes float {
-  from {
-    transform: translateY(0px) rotate(0deg);
-  }
-  to {
-    transform: translateY(40px) rotate(20deg);
-  }
+  0% { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(40px) rotate(20deg); }
 }
 
-/* Optional rotating background overlay (if needed) */
-@keyframes rotateBg {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+.animate-float {
+  animation: float 12s ease-in-out infinite alternate;
 }
